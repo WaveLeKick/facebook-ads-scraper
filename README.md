@@ -1,224 +1,234 @@
-[Facebook Ads Scraper](https://apify.com/sovereigntaylor/facebook-ads-scraper?fpr=data)
+[Facebook Ads Scraper](https://apify.com/dltik/facebook-ads-scraper?fpr=data)
 
-# Facebook Ads Library Scraper -- Competitor Ad Intelligence
+**Facebook Ads Library Scraper** lets you **search and extract Facebook & Instagram ads** from the official Meta Ad Library — without any API token or developer account. Enter a keyword and country, get ad copy, page info, platforms, dates, creative URLs, and auto-enrichment (CTA detection, ad categorization, running duration).
 
-Scrape the **Meta/Facebook Ads Library** to extract competitor ad creatives, copy, spend data, impression ranges, and targeting demographics. The Ad Library is Facebook's public transparency tool that shows all active and inactive ads running across Meta platforms.
+> **No API token needed. No proxy needed.** Just enter a keyword and click Start. The fastest way to spy on competitor ads.
 
-## What This Scraper Does
+ 
 
-This actor searches the [Facebook Ad Library](https://www.facebook.com/ads/library/) and extracts structured data from every ad it finds, including:
-
-- **Ad creative text** (body copy, headline, link caption)
-- **Media URLs** (images and videos)
-- **Call-to-action** button text
-- **Platform distribution** (Facebook, Instagram, Messenger, Audience Network)
-- **Date range** (when the ad started and ended)
-- **Active status** (currently running or not)
-- **Spend estimates** (for political/issue ads)
-- **Impression ranges** (for political/issue ads)
-- **Advertiser details** (name, page URL, page categories)
-- **Direct link** to the ad in the Ad Library
-
-## Use Cases
-
-**Competitor Analysis** -- See exactly what ads your competitors are running, what copy they use, what creatives they test, and which platforms they target. Invaluable for agencies and in-house marketing teams.
-
-**Market Research** -- Search any keyword (e.g., "meal delivery", "insurance quotes", "mattress") to see the entire advertising landscape for that niche. Identify trends, messaging patterns, and market leaders.
-
-**Creative Inspiration** -- Build a swipe file of high-performing ad creatives in your industry. Study headlines, body copy, CTAs, and visual styles that competitors invest in.
-
-**Ad Spend Monitoring** -- For political and issue ads, Facebook publishes spend ranges and impression data. Track how much organizations spend on advocacy and political messaging.
-
-**Brand Protection** -- Monitor if unauthorized parties are running ads using your brand name or trademarks.
-
-**Agency Pitch Prep** -- Before pitching a new client, scrape their current ad library to understand their strategy, volume, and creative approach.
-
-## Input Parameters
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `searchQuery` | string | -- | Search ads by keyword or phrase. Required unless `advertiserName` is provided. |
-| `advertiserName` | string | -- | Filter by specific advertiser/page name (e.g., "Nike", "Casper"). |
-| `country` | string | `US` | Two-letter country code. Supports 50+ countries. |
-| `adType` | enum | `all` | Filter: `all`, `political_and_issue_ads`, `employment_ads`, `housing_ads`, `credit_ads`. |
-| `activeStatus` | enum | `all` | Filter: `all`, `active`, `inactive`. |
-| `maxResults` | integer | `50` | Maximum ads to scrape (1-500). Each ad costs $0.005. |
-| `dateRange` | enum | `all` | Filter: `last_7_days`, `last_30_days`, `last_90_days`, `last_year`, `all`. |
-| `platform` | enum | `all` | Filter: `all`, `facebook`, `instagram`, `messenger`, `audience_network`. |
-| `proxyConfiguration` | object | Residential | Proxy settings. **Residential proxies strongly recommended.** |
-
-## Example Input
-
-```
-{
-    "searchQuery": "mattress",
-    "country": "US",
-    "adType": "all",
-    "activeStatus": "active",
-    "maxResults": 100,
-    "dateRange": "last_30_days",
-    "platform": "all"
-}
-```
-
-## Example Output
-
-Each ad in the dataset contains:
-
-```
-{
-    "adId": null,
-    "adArchiveId": "123456789012345",
-    "advertiserName": "Casper Sleep",
-    "advertiserPageUrl": "https://www.facebook.com/ads/library/?view_all_page_id=12345",
-    "advertiserPageId": "12345",
-    "adCreativeBody": "The award-winning Casper Original Mattress. Now with even more comfort layers for the best sleep of your life. Try it risk-free for 100 nights.",
-    "adCreativeTitle": "Sleep Better Tonight",
-    "adCreativeLinkCaption": "casper.com",
-    "adCreativeLinkUrl": "https://casper.com/mattresses/",
-    "imageUrls": [
-        "https://scontent.xx.fbcdn.net/v/t45.1600-4/..."
-    ],
-    "videoUrls": [],
-    "callToAction": "Shop Now",
-    "platforms": ["facebook", "instagram"],
-    "startDate": "2026-02-15",
-    "endDate": null,
-    "isActive": true,
-    "impressionsLower": null,
-    "impressionsUpper": null,
-    "spendLower": null,
-    "spendUpper": null,
-    "demographicData": null,
-    "pageCategories": ["E-commerce website", "Mattress store"],
-    "adUrl": "https://www.facebook.com/ads/library/?id=123456789012345",
-    "scrapedAt": "2026-03-01T12:00:00.000Z"
-}
-```
-
-### Political/Issue Ad Output (includes spend and impressions)
-
-```
-{
-    "adArchiveId": "987654321098765",
-    "advertiserName": "Committee for XYZ",
-    "adCreativeBody": "Support the Clean Energy Act...",
-    "spendLower": 5000,
-    "spendUpper": 10000,
-    "impressionsLower": 100000,
-    "impressionsUpper": 200000,
-    "demographicData": null,
-    "isActive": true
-}
-```
-
-## Proxy Recommendations
-
-Facebook is aggressive with anti-scraping measures. **Residential proxies are strongly recommended** for reliable results.
-
-| Proxy Type | Reliability | Speed | Cost |
-| --- | --- | --- | --- |
-| **Residential** | High | Medium | Higher |
-| Datacenter | Low | Fast | Lower |
-| No proxy | Very Low | Fast | Free |
-
-The default configuration uses Apify's residential proxy group. If you experience blocks, try:
-
-- Reducing `maxResults` to fewer than 50
-- Using `RESIDENTIAL` proxy group
-- Adding delays between runs (do not run continuously)
-
-## Pricing
-
-This actor uses **Pay Per Event** pricing:
-
-| Event | Price | Description |
-| --- | --- | --- |
-| `ad-scraped` | **$0.005** | Charged for each ad successfully extracted |
-
-**Cost examples:**
-
-- 50 ads = $0.25
-- 100 ads = $0.50
-- 500 ads = $2.50
-
-You only pay for ads that are actually scraped and returned in the dataset. No charge for blocked pages or empty results.
-
-## Scraping Strategies
-
-The actor employs three parallel extraction strategies for maximum coverage:
-
-1. **DOM Parsing** -- Uses Cheerio to parse the rendered HTML of the Ad Library search results page. Extracts ad cards with their full creative content, dates, and metadata.
-2. **Relay Store Extraction** -- Facebook embeds structured JSON data in the page source via relay stores. This strategy parses those embedded data structures for rich ad metadata.
-3. **Script Tag Mining** -- Searches script tags for serialized ad data, search results, and card data structures. Acts as a fallback when DOM structure changes.
-
-All three strategies run on every page load. Results are deduplicated by ad archive ID before output.
-
-## Limitations
-
-- **Login walls**: Facebook may require login for some queries. The actor handles this gracefully but may return fewer results.
-- **Rate limiting**: Facebook rate-limits aggressive scraping. The actor uses delays and retries, but very large scrapes (500 ads) may be partially blocked.
-- **Spend/impression data**: Only available for political and issue ads. Commercial ads do not include spend information (this is a Facebook policy, not a scraper limitation).
-- **Dynamic content**: Some ad creatives load via JavaScript. The Cheerio-based approach captures the initial page render. Video previews may not always be captured.
-- **Geographic restrictions**: Some ads are only visible from specific countries. Use the `country` parameter to match the target market.
-
-## Tips for Best Results
-
-1. **Be specific with queries** -- "running shoes Nike" works better than just "shoes"
-2. **Use advertiserName for known brands** -- More reliable than keyword search
-3. **Start small** -- Test with 10-20 ads before scaling to 500
-4. **Political ads have richer data** -- If you need spend info, search political/issue ads specifically
-5. **Check multiple countries** -- Advertisers run different campaigns per market
-6. **Active-only filter** -- Use `activeStatus: "active"` to see what is running right now
-
-## FAQ
-
-**Q: Why are some fields null?**
-A: Facebook does not expose all data for all ads. Spend and impression data is only available for political/issue ads. Some older ads may have less metadata.
-
-**Q: I'm getting no results. What should I do?**
-A: First, check if your search query returns results when you manually visit facebook.com/ads/library. If it does, the issue is likely proxy-related. Switch to residential proxies and reduce maxResults.
-
-**Q: Can I scrape a specific advertiser's entire ad history?**
-A: Yes. Set `advertiserName` to the exact page name (e.g., "Nike"), set `activeStatus` to "all", and `dateRange` to "all". Set `maxResults` to 500 for maximum coverage.
-
-**Q: How often does the Ad Library update?**
-A: Facebook updates the Ad Library in near real-time. New ads typically appear within 24 hours of going live.
-
-## Support
-
-For issues, feature requests, or questions, open an issue on the actor's Apify page or contact the developer.
+> ⭐ **Found this useful?** Click the **Bookmark** button at the top of [this page](https://apify.com/dltik/facebook-ads-scraper) — it helps the scraper stay visible to others who need it. Takes 1 click. No signup beyond your existing Apify account.
 
 ---
 
-Built by [Sovereign Taylor](https://github.com/ryudi84) -- autonomous AI agent building tools for the agent economy.
+## What can Facebook Ads Library Scraper do?
 
-## Integration — Python
+- 🔍 **Search ads by keyword** — find all ads containing "fitness", "dropshipping", "skincare", etc.
+- 📄 **Search ads by page** — get all ads from a specific Facebook page
+- 🌍 **Filter by country** — target ads shown in any country or worldwide
+- 📊 **Active/inactive filter** — see only running ads or recently stopped ones
+- 🤖 **Auto-enrichment** — CTA detection, ad category (ecommerce/lead gen/app install), running duration, hashtags, emoji count
+- 📱 **Platform detection** — which platforms the ad runs on (Facebook, Instagram, Messenger)
+- ⚡ **No API token required** — works out of the box, zero configuration
+
+---
+
+## What data can you extract from Facebook Ads?
+
+| Field | Description |
+| --- | --- |
+| `page_name` | Advertiser page name |
+| `ad_text` | Full ad copy / creative body |
+| `start_date` | When the ad started running |
+| `end_date` | When the ad stopped (null if still active) |
+| `is_active` | Whether the ad is currently running |
+| `platforms` | Facebook, Instagram, Messenger, Audience Network |
+| `ad_snapshot_url` | Direct link to view the ad creative |
+| `ad_id` | Meta Ad Library ID |
+| `media_type` | Image, video, or carousel |
+| `ad_category` | Auto-detected: ecommerce, lead_gen, app_install, video, brand_awareness |
+| `detected_ctas` | Call-to-action phrases found (Shop Now, Sign Up, Learn More...) |
+| `duration_days` | How many days the ad has been running |
+| `hashtags` | Hashtags used in the ad copy |
+| `word_count` | Number of words in the ad text |
+
+---
+
+## How to search Facebook ads
+
+1. **[Create a free Apify account](https://apify.com/sign-up)** — no credit card required
+2. **Open [Facebook Ads Library Scraper](https://apify.com/dltik/facebook-ads-scraper)** in Apify Store
+3. **Enter a keyword** (e.g. `fitness`) and **select a country** (e.g. `FR`)
+4. **Choose filters** — active/inactive, max results
+5. **Click Start** — ads start appearing in seconds
+6. **Download your results** in JSON, CSV, or Excel
+
+---
+
+## How much does it cost to scrape Facebook ads?
+
+**$0.001 per ad extracted** ($1 per 1,000 ads).
+
+| Run size | Ads | Apify cost | Time |
+| --- | --- | --- | --- |
+| Quick test (10 ads) | 10 | ~$0.01 | ~30s |
+| Small batch (50 ads) | 50 | ~$0.05 | ~1min |
+| Standard (200 ads) | 200 | ~$0.20 | ~3min |
+| Large (500 ads) | 500 | ~$0.50 | ~8min |
+
+---
+
+## Input
+
+| Parameter | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `searchTerms` | string | ❌ | — | Keywords to search (e.g. `fitness`) |
+| `pageId` | string | ❌ | — | Facebook Page ID to get all its ads |
+| `country` | string | ❌ | `ALL` | Country code (FR, US, GB, DE...) or ALL |
+| `activeStatus` | string | ❌ | `all` | `all`, `active`, or `inactive` |
+| `maxResults` | integer | ❌ | `50` | Max ads to return (1-500) |
+| `enrichAds` | boolean | ❌ | `true` | Add CTA detection, category, duration |
+
+> Provide either `searchTerms` or `pageId` (or both).
+
+---
+
+## Output example
 
 ```
-from apify_client import ApifyClient
-
-client = ApifyClient("YOUR_API_TOKEN")
-run = client.actor("sovereigntaylor/facebook-ads-scraper").call(run_input={
-    "searchTerm": "facebook ads",
-    "maxResults": 50
-})
-
-for item in client.dataset(run["defaultDatasetId"]).iterate_items():
-    print(f"{item.get('title', item.get('name', 'N/A'))}")
+{
+  "ad_id": "1234567890",
+  "page_name": "FitnessBrand",
+  "ad_text": "Get 50% off our best-selling protein powder! Limited time offer. Shop now at fitnessbrand.com #fitness #protein",
+  "start_date": "Mar 16, 2026",
+  "end_date": null,
+  "is_active": true,
+  "platforms": ["facebook", "instagram"],
+  "ad_snapshot_url": "https://www.facebook.com/ads/library/?id=1234567890",
+  "media_type": "image",
+  "ad_category": "ecommerce",
+  "detected_ctas": ["shop now"],
+  "duration_days": 13,
+  "hashtags": ["#fitness", "#protein"],
+  "emoji_count": 0,
+  "word_count": 18
+}
 ```
 
-## Integration — JavaScript
+---
+
+## Use cases
+
+- **Competitor ad research** — see exactly what ads your competitors are running right now
+- **Dropshipping product research** — find winning products by searching ad keywords
+- **Agency reporting** — track client competitors' ad strategies over time
+- **Creative inspiration** — browse thousands of ad copies in your niche
+- **Market research** — understand what's being advertised in any country and industry
+
+---
+
+## Use Facebook Ads Scraper via API
+
+**Python:**
 
 ```
-import { ApifyClient } from 'apify-client';
-const client = new ApifyClient({ token: 'YOUR_API_TOKEN' });
+import requests
 
-const run = await client.actor('sovereigntaylor/facebook-ads-scraper').call({
-    searchTerm: 'facebook ads',
-    maxResults: 50
-});
+run = requests.post(
+    "https://api.apify.com/v2/acts/dltik~facebook-ads-scraper/runs",
+    headers={"Authorization": "Bearer YOUR_APIFY_TOKEN"},
+    json={
+        "searchTerms": "fitness",
+        "country": "FR",
+        "maxResults": 100,
+        "enrichAds": True
+    }
+).json()
 
-const { items } = await client.dataset(run.defaultDatasetId).listItems();
-items.forEach(item => console.log(item.title || item.name || 'N/A'));
+print(f"Run started: {run['data']['id']}")
 ```
+
+**curl:**
+
+```
+curl -X POST "https://api.apify.com/v2/acts/dltik~facebook-ads-scraper/runs" \
+  -H "Authorization: Bearer YOUR_APIFY_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"searchTerms": "fitness", "country": "FR", "maxResults": 50}'
+```
+
+---
+
+## FAQ
+
+**Do I need a Facebook account or API token?**
+
+No. The Meta Ad Library is a public transparency tool. This actor scrapes it directly — no login, no API token, no developer account needed.
+
+**What's the difference between this and the Meta Ad Library API?**
+
+The official API requires a developer account, app review, and access token management. This actor gives you the same data with zero setup. Just enter a keyword and click Start.
+
+**Can I search ads from a specific competitor?**
+
+Yes. Use the `pageId` parameter with your competitor's Facebook Page ID. You can find the page ID in the page's URL or About section.
+
+**Why do some ads have no text?**
+
+Some ads are image-only or video-only without body text. The `ad_text` field will be empty but you'll still get the page name, dates, platforms, and snapshot URL.
+
+**How often does the Ad Library update?**
+
+Meta updates the Ad Library in near-real-time. New ads appear within hours of going live. Stopped ads are marked inactive.
+
+**I need help or a custom solution.**
+
+Open an issue on the [Issues tab](https://apify.com/dltik/facebook-ads-scraper/issues) or contact us through Apify.
+
+---
+
+## Connect with Make, Zapier & n8n
+
+This actor integrates with any automation platform via the Apify API.
+
+### Make (Integromat)
+
+1. Add an **Apify module** in your Make scenario
+2. Select **Run Actor** and choose this actor
+3. Configure the input (paste your JSON)
+4. Add a **Get Dataset Items** module to retrieve results
+5. Connect to Google Sheets, HubSpot, Slack, or any other app
+
+### Zapier
+
+1. Use the **Apify integration** on Zapier
+2. Set trigger: **Actor Run Finished**
+3. Action: **Get Dataset Items**
+4. Send results to your CRM, email tool, or spreadsheet
+
+### n8n
+
+1. Add an **HTTP Request** node to call the Apify API
+2. POST to `https://api.apify.com/v2/acts/dltik~facebook-ads-scraper/runs`
+3. Wait for completion, then fetch dataset items
+4. Route results to any n8n node
+
+### Webhooks
+
+Set up a webhook to get notified when a run finishes:
+
+```
+run = client.actor("dltik/facebook-ads-scraper").call(
+    run_input={...},
+    webhooks=[{
+        "eventTypes": ["ACTOR.RUN.SUCCEEDED"],
+        "requestUrl": "https://your-webhook-url.com"
+    }]
+)
+```
+
+---
+
+---
+
+⭐ **Found this Facebook Ads Library Scraper useful? Bookmark it** — Apify ranks actors by bookmarks, so it's the strongest single signal for Store visibility. One click = directly helps this actor stay surfaced.
+
+## Other scrapers by dltik
+
+| Actor | What it does | Price |
+| --- | --- | --- |
+| [Google Maps Email Extractor](https://apify.com/dltik/google-maps-email-extractor) | Extract emails, phones, WhatsApp from Google Maps businesses | $25/1K |
+| [TikTok Scraper](https://apify.com/dltik/tiktok-scraper) | Scrape profiles, videos, hashtags, search, trending | $1/1K |
+| [TikTok Video Downloader](https://apify.com/dltik/tiktok-video-downloader) | Download TikTok videos without watermark | $5/1K |
+| [Reddit Scraper](https://apify.com/dltik/reddit-scraper) | Scrape posts, comments, profiles with sentiment analysis | $2/1K |
+| [Trustpilot Scraper](https://apify.com/dltik/trustpilot-scraper) | Scrape reviews, ratings, company profiles with sentiment | $0.50/1K |
+| [HackerNews MCP Server](https://apify.com/dltik/mcp-server-hackernews) | HN search for AI agents — tech audience research | $5/1K |
