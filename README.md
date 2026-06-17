@@ -1,80 +1,115 @@
-[Facebook Ads Scraper](https://apify.com/alizarin_refrigerator-owner/facebook-ads-scraper?fpr=data)
+[Facebook Ads Scraper](https://apify.com/good-apis/facebook-ads-scraper?fpr=data)
 
-# Facebook Ad Library Scraper - Competitor Ad Intelligence
+# Facebook Ads Scraper
 
-Discover competitor Facebook ads by scraping Meta's Ad Library. Find active and inactive ads, see creatives, and analyze messaging. No per-campaign fees.
+Scrape Meta's Ad Library for complete ad data — creative, audience reach, page intelligence, spend, and more.
 
----
+## Features
 
-## Quick Start
-
-### Test with Demo Mode (free, no API key needed)
-
-```
-{
-  "demoMode": true
-}
-```
-
-### Run with real data
-
-```
-{
-  "demoMode": false,
-  "countryCode": "US",
-  "maxItems": 50,
-  "adActiveStatus": "ALL",
-  "webhookPlatform": "custom"
-}
-```
-
----
-
-## Input Parameters
-
-| Parameter | Type | Default | Required | Description |
-| --- | --- | --- | --- | --- |
-| `pageIds` | array | - | No | List of Facebook Page IDs to scrape ads from |
-| `searchTerm` | string | - | No | Search term to find ads (alternative to pageIds) |
-| `countryCode` | string | `"US"` | No | Country to filter ads (ISO 2-letter code) |
-| `maxItems` | integer | `50` | No | Maximum number of ads to scrape per page |
-| `adActiveStatus` | string | `"ALL"` | No | Filter by ad status |
-| `demoMode` | boolean | `true` | No | Run with sample data to test without real scraping. Returns realistic sample output instantly. Set to false and provide pageIds or searchTerm for real scraping. |
-| `webhookUrl` | string | - | No | URL to POST results when scraping completes (Zapier, Make, n8n, custom endpoint) |
-| `webhookPlatform` | string | `"custom"` | No | Platform type for webhook formatting |
-| `webhookHeaders` | object | - | No | Custom HTTP headers to send with webhook (JSON object) |
-
----
+- **Search** — Find ads by page slug or keyword across any country
+- **Complete ad data** — Every search result includes full details: creative, images, videos, audience reach, spend, page metadata
+- **47-field output** — The richest Facebook Ads data available on Apify
+- **Page intelligence** — 32-field page profiles: about text, verification status, entity type, category, cover photo, and more
+- **Audience reach** — Total reach, demographic breakdown by age/gender/region (where available)
+- **Full ad creative** — body, title, images, videos, carousel cards, CTA, display format
+- **Spend & impressions** — with upper/lower bounds
+- **Publisher platforms** — Facebook, Instagram, Messenger, Audience Network
 
 ## Pricing
 
-This actor uses **pay-per-event** billing:
+**$0.75 per 1,000 ads** (Pay Per Event) — you only pay for ads delivered.
 
-| Event | Description | Price |
-| --- | --- | --- |
-| Ad Scraped | Each Facebook ad scraped from Ad Library | $0.04 |
+## Actions
 
-**Demo mode is free** -- no charges for sample data.
+### `search` — Search Ad Library
 
----
+Search for ads by Facebook page slug or keyword. Each result includes complete ad data with creative, spend, audience reach, and page intelligence.
 
-## Troubleshooting
+**Required input:**
 
-### "API error 429" or "Rate limit"
+- `slug` — Page slug or search keyword (e.g. "hubspot", "medvi", "weight loss")
 
-Too many requests. Wait a minute and try again, or reduce the number of items per run.
+**Optional input:**
 
-### No results or empty dataset
+- `country` — Country code (default: "US"). Examples: US, FR, GB, DE
+- `max_ads` — Maximum number of ads to return (default: 150, max: 15000). Pagination stops as soon as this is reached, so you only pay for what you ask for.
+- `active_only` — Only return active ads (default: false)
 
-Check the run log for error messages. Common causes:
+### `detail` — Single Ad Lookup
 
-- Invalid input format (check the examples above)
-- The target data doesn't exist or is too small to track
+Get complete data for a single ad by archive ID.
 
-### How do I test without an API key?
+**Required input:**
 
-Enable **Demo Mode** in the input. This returns realistic sample data so you can verify the output format works for your workflow.
+- `ad_archive_id` — The ad archive ID (from search results)
+- `page_id` — The Facebook page ID (from search results)
 
----
+**Optional input:**
 
-**Built by John Rippy | [Actor Arsenal](https://actorarsenal.com)**
+- `country` — Country code (default: "US")
+
+## Example Input
+
+### Search
+
+```
+{
+    "action": "search",
+    "slug": "hubspot",
+    "country": "US",
+    "max_ads": 100,
+    "active_only": true
+}
+```
+
+### Detail
+
+```
+{
+    "action": "detail",
+    "ad_archive_id": "1617980282547010",
+    "page_id": "108624140548097",
+    "country": "US"
+}
+```
+
+## Example Output
+
+### Search result (one ad)
+
+```
+{
+    "library_id": "1617980282547010",
+    "page_id": "108624140548097",
+    "page_name": "HubSpot",
+    "page_likes": 1250000,
+    "page_category": "Software",
+    "page_about": "HubSpot is a CRM platform with all the software...",
+    "page_verification": "blue_verified",
+    "page_cover_photo": "https://...",
+    "entity_type": "PERSON_PROFILE",
+    "is_political_page": false,
+    "ad_body": "Grow better with HubSpot...",
+    "ad_title": "Free CRM Software",
+    "cta_text": "Learn more",
+    "images": ["https://..."],
+    "cards": [{"body": "...", "title": "..."}],
+    "start_date": "2026-02-06",
+    "is_active": true,
+    "publisher_platforms": ["facebook", "instagram"],
+    "spend": {"lower_bound": "100", "upper_bound": "499", "currency": "USD"},
+    "impressions": {"lower_bound": "10000", "upper_bound": "14999"},
+    "reach_estimate": 756,
+    "targeted_countries": ["US"],
+    "collation_count": 4,
+    "display_format": "DCO"
+}
+```
+
+## Notes
+
+- Use `max_ads` to cap how many ads are returned (and how much you pay).
+- Each ad in search results comes with full details.
+- Requests may take 30-60 seconds.
+- Audience reach data availability depends on ad type and region.
+- Some ads may not have spend/impressions data.
